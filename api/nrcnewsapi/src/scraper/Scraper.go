@@ -71,42 +71,69 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		var sectionList []Section
 
-		c.OnHTML("div.content", func(e *colly.HTMLElement) {
+		var section Section
 
-			var section Section
+		var buff []Dummy
+
+		c.OnHTML("div.content", func(e *colly.HTMLElement) {
 
 			goQuerySelection := e.DOM
 
 			section.Title = ""
 
-			goQuerySelection.Find("div > p, div > h2").Each(func(i int, selection *goquery.Selection) {
-
-				log.Println("Selection: {}", selection.Text())
+			var dummy Dummy
+			goQuerySelection.Find("div.content > p, div.content > h2").Each(func(i int, selection *goquery.Selection) {
 
 				if selection.Parent().Is("aside") {
 					return
 				}
 
 				if selection.Is("h2") {
-					sectionList = append(sectionList, section)
+					dummy.Title = selection.Text()
+					dummy.Content = ""
+					dummy.Type = "h2"
 
-					section.Title = selection.Text()
-
-					section.Contents = nil
+					buff = append(buff, dummy)
 				} else if selection.Is("p") && len(selection.Text()) > 0 {
-					section.Contents = append(section.Contents, selection.Text())
+					dummy.Content = selection.Text()
+					dummy.Type = "p"
 
-					next := selection.Next()
-
-					if next.Is("p, h2") {
-						sectionList = append(sectionList, section)
-					}
-
-					//if !next.Is("p, h2") && next.Next().Is("div > *") {
-					//	sectionList = append(sectionList, section)
-					//}
+					buff = append(buff, dummy)
 				}
+
+				log.Println("Dummy: {}", dummy)
 			})
+
+			//TODO: merging by using groupby h2 and add as Section to SectionList !!
+
+			//goQuerySelection.Find("div > p, div > h2").Each(func(i int, selection *goquery.Selection) {
+			//
+			//	log.Println("Selection: {}", selection.Text())
+			//
+			//	if selection.Parent().Is("aside") {
+			//		return
+			//	}
+			//
+			//	if selection.Is("h2") {
+			//		sectionList = append(sectionList, section)
+			//
+			//		section.Title = selection.Text()
+			//
+			//		section.Contents = nil
+			//	} else if selection.Is("p") && len(selection.Text()) > 0 {
+			//		section.Contents = append(section.Contents, selection.Text())
+			//
+			//		next := selection.Next()
+			//
+			//		if next.Is("p, h2") {
+			//			sectionList = append(sectionList, section)
+			//		}
+			//
+			//		//if !next.Is("p, h2") && next.Next().Is("div > *") {
+			//		//	sectionList = append(sectionList, section)
+			//		//}
+			//	}
+			//})
 
 			article = Article{
 				ArticleItem: ArticleItem{
@@ -128,7 +155,7 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		log.Println("Article scraped succesfully")
 
-		context.JSON(http.StatusOK, article)
+		context.JSON(http.StatusOK, buff)
 
 	}
 }
@@ -153,4 +180,10 @@ func trimText(text string) string {
 	trimmedLeft := strings.TrimLeft(trimmedSpaces, " ")
 	trimmedFinal := strings.TrimRight(trimmedLeft, " ")
 	return trimmedFinal
+}
+
+type Dummy struct {
+	Title   string
+	Content string
+	Type    string
 }
