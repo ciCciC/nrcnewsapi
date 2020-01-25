@@ -13,7 +13,7 @@ func (t GameController) InitRoute(r *gin.Engine) {
 	scraper := scraper.Scraper{Endpoint: "games"}
 	game := r.Group("/category")
 	{
-		game.GET("/games",
-			scraper.GetAllArticles())
+		game.GET("/games", scraper.GetAllArticles())
+		game.GET("/games/article", scraper.GetArticle())
 	}
 }
