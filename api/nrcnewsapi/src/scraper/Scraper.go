@@ -3,6 +3,7 @@ package scraper
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
 	"log"
@@ -28,8 +29,12 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 
 			goQuerySelection := e.DOM
 
-			linkOfPage, _ := goQuerySelection.Find("a").Attr("href")
-			imageLink := strings.Split(e.ChildAttr("img", "data-src"), "|")[0]
+			linkOfPage, _ := goQuerySelection.
+				Find("a").
+				Attr("href")
+
+			imageLink := strings.
+				Split(e.ChildAttr("img", "data-src"), "|")[0]
 
 			header := goQuerySelection.Find(".nmt-item__content")
 
@@ -50,7 +55,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 
 		c.Wait()
 
-		log.Println("Articles scraped:", len(articleList))
+		log.Println("Article items scraped:", len(articleList))
 
 		context.JSON(http.StatusOK, articleList)
 	}
@@ -61,8 +66,6 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		var articleItem ArticleItem
 		context.BindJSON(&articleItem)
 
-		log.Println("ArticleItem: {}", articleItem)
-
 		c := GetCollector()
 
 		initializeCalls(c)
@@ -71,69 +74,49 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		var sectionList []Section
 
-		var section Section
-
 		var buff []Dummy
 
 		c.OnHTML("div.content", func(e *colly.HTMLElement) {
 
 			goQuerySelection := e.DOM
 
-			section.Title = ""
-
 			var dummy Dummy
-			goQuerySelection.Find("div.content > p, div.content > h2").Each(func(i int, selection *goquery.Selection) {
+			goQuerySelection.Find("div.content > p, div.content > h2").
+				Each(func(i int, selection *goquery.Selection) {
 
-				if selection.Parent().Is("aside") {
-					return
-				}
+					if selection.Parent().Is("aside") {
+						return
+					}
 
-				if selection.Is("h2") {
-					dummy.Title = selection.Text()
-					dummy.Content = ""
-					dummy.Type = "h2"
+					if selection.Is("h2") {
+						dummy.Title = selection.Text()
+						dummy.Content = ""
+						dummy.Type = "h2"
 
-					buff = append(buff, dummy)
-				} else if selection.Is("p") && len(selection.Text()) > 0 {
-					dummy.Content = selection.Text()
-					dummy.Type = "p"
+						buff = append(buff, dummy)
 
-					buff = append(buff, dummy)
-				}
+					} else if selection.Is("p") && len(selection.Text()) > 0 {
+						dummy.Content = selection.Text()
+						dummy.Type = "p"
 
-				log.Println("Dummy: {}", dummy)
+						buff = append(buff, dummy)
+					}
+				})
+
+			groupedByTitle := linq.From(buff).GroupBy(
+				func(i interface{}) interface{} { return i.(Dummy).Title },
+				func(i interface{}) interface{} { return i.(Dummy).Content })
+
+			groupedByTitle.ForEach(func(i interface{}) {
+				var section Section
+				section.Title = i.(linq.Group).
+					Key.(string)
+
+				linq.From(i.(linq.Group).Group).
+					ToSlice(&section.Contents)
+
+				sectionList = append(sectionList, section)
 			})
-
-			//TODO: merging by using groupby h2 and add as Section to SectionList !!
-
-			//goQuerySelection.Find("div > p, div > h2").Each(func(i int, selection *goquery.Selection) {
-			//
-			//	log.Println("Selection: {}", selection.Text())
-			//
-			//	if selection.Parent().Is("aside") {
-			//		return
-			//	}
-			//
-			//	if selection.Is("h2") {
-			//		sectionList = append(sectionList, section)
-			//
-			//		section.Title = selection.Text()
-			//
-			//		section.Contents = nil
-			//	} else if selection.Is("p") && len(selection.Text()) > 0 {
-			//		section.Contents = append(section.Contents, selection.Text())
-			//
-			//		next := selection.Next()
-			//
-			//		if next.Is("p, h2") {
-			//			sectionList = append(sectionList, section)
-			//		}
-			//
-			//		//if !next.Is("p, h2") && next.Next().Is("div > *") {
-			//		//	sectionList = append(sectionList, section)
-			//		//}
-			//	}
-			//})
 
 			article = Article{
 				ArticleItem: ArticleItem{
@@ -148,14 +131,12 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		})
 
 		c.Visit(articleItem.PageLink)
-		//fake := "https://www.nrc.nl/nieuws/2020/01/20/we-leven-nu-in-de-gouden-eeuw-van-gaming-a3987443"
-		//c.Visit(fake)
 
 		c.Wait()
 
 		log.Println("Article scraped succesfully")
 
-		context.JSON(http.StatusOK, buff)
+		context.JSON(http.StatusOK, article)
 
 	}
 }
@@ -180,6 +161,16 @@ func trimText(text string) string {
 	trimmedLeft := strings.TrimLeft(trimmedSpaces, " ")
 	trimmedFinal := strings.TrimRight(trimmedLeft, " ")
 	return trimmedFinal
+}
+
+func printSection(section Section) {
+	log.Println("Section title: {}", section.Title)
+
+	for _, content := range section.Contents {
+		log.Println("Section content: {}", content)
+	}
+
+	log.Println("-------------------")
 }
 
 type Dummy struct {
