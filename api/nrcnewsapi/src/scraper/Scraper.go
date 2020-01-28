@@ -137,7 +137,6 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		log.Println("Article scraped succesfully")
 
 		context.JSON(http.StatusOK, article)
-
 	}
 }
 
