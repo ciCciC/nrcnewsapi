@@ -1,5 +1,5 @@
 # nrcnewsapi
-### Experimental
+###For experimental purpose
 <br/>
 
 NRC = dutch news website
