@@ -1,6 +1,6 @@
 package model
 
 type ContentBody struct {
-	body  string
-	cType string
+	Content string
+	CType   string
 }
