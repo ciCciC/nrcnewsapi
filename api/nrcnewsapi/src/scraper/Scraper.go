@@ -80,9 +80,10 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 			goQuerySelection := e.DOM
 
-			var dummy Dummy
-			goQuerySelection.Find("div.content > p, div.content > h2").
+			//var dummy Dummy
+			goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
 				Each(func(i int, selection *goquery.Selection) {
+					var dummy Dummy
 
 					if selection.Parent().Is("aside") {
 						return
@@ -100,20 +101,31 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 						dummy.Type = "p"
 
 						buff = append(buff, dummy)
+					} else if selection.Is("figure") {
+						attr := e.ChildAttr("img", "data-src")
+						dummy.Content = strings.Split(attr, "|")[0]
+						dummy.Type = "img"
+
+						buff = append(buff, dummy)
 					}
+
+					//buff = append(buff, dummy)
 				})
 
 			groupedByTitle := linq.From(buff).GroupBy(
 				func(i interface{}) interface{} { return i.(Dummy).Title },
-				func(i interface{}) interface{} { return i.(Dummy).Content })
+				func(i interface{}) interface{} { return i.(Dummy) })
 
 			groupedByTitle.ForEach(func(i interface{}) {
 				var section Section
 				section.Title = i.(linq.Group).
 					Key.(string)
 
-				linq.From(i.(linq.Group).Group).
-					ToSlice(&section.Contents)
+				//linq.From(i.(linq.Group).Group).
+				//	SelectT(func(x Dummy) ContentBody {
+				//		return ContentBody{ body: x.Content, cType: x.Type}
+				//	}).
+				//	ToSlice(&section.Contents)
 
 				sectionList = append(sectionList, section)
 			})

@@ -1,6 +1,7 @@
 package model
 
 type Section struct {
-	Title    string
-	Contents []string
+	Title string
+	//Contents []string
+	Contents []ContentBody
 }
