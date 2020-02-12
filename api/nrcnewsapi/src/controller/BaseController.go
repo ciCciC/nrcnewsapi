@@ -7,3 +7,7 @@ import (
 type BaseController interface {
 	InitRoute(r *gin.Engine)
 }
+
+const (
+	CATEGORY = "category"
+)
