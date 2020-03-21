@@ -14,6 +14,6 @@ func (t PhysicsController) InitRoute(r *gin.Engine) {
 	physics := r.Group("/" + CATEGORY)
 	{
 		physics.GET("/physics", scraper.GetAllArticles())
-		physics.GET("/physics/article", scraper.GetArticle())
+		physics.POST("/physics/article", scraper.GetArticle())
 	}
 }

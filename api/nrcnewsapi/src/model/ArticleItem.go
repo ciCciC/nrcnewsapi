@@ -1,9 +1,9 @@
 package model
 
 type ArticleItem struct {
-	PageLink string
-	ImageLink string
-	Topic string
-	Title string
-	Teaser string
+	PageLink string `json:"pageLink"`
+	ImageLink string `json:"imageLink"`
+	Topic string `json:"topic"`
+	Title string `json:"title"`
+	Teaser string `json:"teaser"`
 }

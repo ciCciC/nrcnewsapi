@@ -1,6 +1,6 @@
 package model
 
 type ContentBody struct {
-	Content string
-	CType   string
+	Content string `json:"content"`
+	CType   string `json:"cType"`
 }

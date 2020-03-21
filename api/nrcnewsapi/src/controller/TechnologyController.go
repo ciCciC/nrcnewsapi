@@ -14,6 +14,6 @@ func (t TechnologyController) InitRoute(r *gin.Engine) {
 	technology := r.Group("/" + CATEGORY)
 	{
 		technology.GET("/technology", scraper.GetAllArticles())
-		technology.GET("/technology/article", scraper.GetArticle())
+		technology.POST("/technology/article", scraper.GetArticle())
 	}
 }
