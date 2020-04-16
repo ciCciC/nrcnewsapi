@@ -12,12 +12,12 @@ func main() {
 
 	r.GET("/",
 		func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
-		c.JSON(http.StatusOK, gin.H{
-			"": welcomeTxt,
-		},)
-	})
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+			c.JSON(http.StatusOK, gin.H{
+				"": welcomeTxt,
+			})
+		})
 	r.Run()
 }
 
