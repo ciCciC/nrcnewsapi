@@ -11,9 +11,9 @@ type TechnologyController struct {
 
 func (t TechnologyController) InitRoute(r *gin.Engine) {
 	scraper := scraper.Scraper{Endpoint: "technologie"}
-	technology := r.Group("/category")
+	technology := r.Group("/" + CATEGORY)
 	{
-		technology.GET("/technology",
-			scraper.GetAllArticles())
+		technology.GET("/technology", scraper.GetAllArticles())
+		technology.POST("/technology/article", scraper.GetArticle())
 	}
 }

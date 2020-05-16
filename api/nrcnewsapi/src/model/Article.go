@@ -2,5 +2,5 @@ package model
 
 type Article struct {
 	ArticleItem
-	SectionList []Section
+	SectionList []Section `json:"sectionList"`
 }

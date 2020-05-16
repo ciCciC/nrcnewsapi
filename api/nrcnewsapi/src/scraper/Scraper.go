@@ -34,7 +34,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 				Attr("href")
 
 			imageLink := strings.
-				Split(e.ChildAttr("img", "data-src"), "|")[0]
+				Split(e.ChildAttr(IMG, "data-src"), "|")[0]
 
 			header := goQuerySelection.Find(".nmt-item__content")
 
@@ -81,31 +81,34 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 			goQuerySelection := e.DOM
 
 			var dummy Dummy
-			goQuerySelection.Find("div.content > p, div.content > h2").
+			goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
 				Each(func(i int, selection *goquery.Selection) {
 
 					if selection.Parent().Is("aside") {
 						return
 					}
 
-					if selection.Is("h2") {
+					if selection.Is(H2) {
 						dummy.Title = selection.Text()
-						dummy.Content = ""
-						dummy.Type = "h2"
+						dummy.ContentBody.Content = ""
+						dummy.ContentBody.CType = H2
 
-						buff = append(buff, dummy)
+					} else if selection.Is(P) && len(selection.Text()) > 0 {
+						dummy.ContentBody.Content = selection.Text()
+						dummy.ContentBody.CType = P
 
-					} else if selection.Is("p") && len(selection.Text()) > 0 {
-						dummy.Content = selection.Text()
-						dummy.Type = "p"
-
-						buff = append(buff, dummy)
+					} else if selection.Is(FIGURE) {
+						attr := e.ChildAttr(IMG, "data-src")
+						dummy.ContentBody.Content = strings.Split(attr, "|")[0]
+						dummy.ContentBody.CType = IMG
 					}
+
+					buff = append(buff, dummy)
 				})
 
 			groupedByTitle := linq.From(buff).GroupBy(
 				func(i interface{}) interface{} { return i.(Dummy).Title },
-				func(i interface{}) interface{} { return i.(Dummy).Content })
+				func(i interface{}) interface{} { return i.(Dummy).ContentBody })
 
 			groupedByTitle.ForEach(func(i interface{}) {
 				var section Section
@@ -134,7 +137,7 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		c.Wait()
 
-		log.Println("Article scraped succesfully")
+		log.Println("Article scraped successfully")
 
 		context.JSON(http.StatusOK, article)
 	}
@@ -173,7 +176,13 @@ func printSection(section Section) {
 }
 
 type Dummy struct {
-	Title   string
-	Content string
-	Type    string
+	Title       string
+	ContentBody ContentBody
 }
+
+const (
+	H2     = "h2"
+	P      = "p"
+	IMG    = "img"
+	FIGURE = "figure"
+)

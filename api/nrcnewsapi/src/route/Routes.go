@@ -12,6 +12,7 @@ func SetupRouter() *gin.Engine {
 		new(controller.TechnologyController),
 		new(controller.GameController),
 		new(controller.PhysicsController),
+		new(controller.CategoryController),
 	}
 
 	for _, baseController := range cArr {

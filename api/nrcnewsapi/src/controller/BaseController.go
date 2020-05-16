@@ -1,7 +1,13 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type BaseController interface {
 	InitRoute(r *gin.Engine)
 }
+
+const (
+	CATEGORY = "category"
+)
