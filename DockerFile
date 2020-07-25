@@ -2,10 +2,10 @@
 FROM golang:latest
 
 # Add Maintainer Info
-LABEL maintainer="W Hall <golangForGolang@gmail.com>"
+LABEL maintainer="W Hall <willemhall2894@gmail.com>"
 
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /api
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -17,10 +17,10 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o main .
+RUN go build api/nrcnewsapi/src/main.go
 
-# Expose port 8080 to the outside world
-EXPOSE 8080
+# Expose port 5011 to the outside world
+EXPOSE 5011
 
 # Command to run the executable
 CMD ["./main"]

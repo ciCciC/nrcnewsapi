@@ -14,7 +14,55 @@ import (
 )
 
 type Scraper struct {
-	Endpoint string
+	Endpoint  string
+	Endpoints [3]string
+}
+
+func (scraper Scraper) GetAll() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		c := GetCollector()
+
+		initializeCalls(c)
+
+		var articleList []ArticleItem
+
+		for _, endpoint := range scraper.Endpoints {
+
+			c.OnHTML("div.nmt-item__inner", func(e *colly.HTMLElement) {
+
+				goQuerySelection := e.DOM
+
+				linkOfPage, _ := goQuerySelection.
+					Find("a").
+					Attr("href")
+
+				imageLink := strings.
+					Split(e.ChildAttr(IMG, "data-src"), "|")[0]
+
+				header := goQuerySelection.Find(".nmt-item__content")
+
+				topic := trimText(header.Find("h6").Text())
+				title := trimText(header.Find("h3").Text())
+				teaser := trimText(header.Find(".nmt-item__teaser").Text())
+
+				articleList = append(articleList,
+					ArticleItem{
+						PageLink:  API + linkOfPage,
+						ImageLink: imageLink,
+						Topic:     topic,
+						Title:     title,
+						Teaser:    teaser})
+			})
+
+			c.Visit(API + "/categorie/" + endpoint)
+			c.Wait()
+
+			log.Println("Article items scraped:", len(articleList))
+
+		}
+
+		context.JSON(http.StatusOK, articleList)
+	}
 }
 
 func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
@@ -137,6 +185,7 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		c.Wait()
 
+		log.Println("Fetched Article: ", article)
 		log.Println("Article scraped successfully")
 
 		context.JSON(http.StatusOK, article)

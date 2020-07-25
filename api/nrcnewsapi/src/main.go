@@ -18,7 +18,8 @@ func main() {
 				"": welcomeTxt,
 			})
 		})
-	r.Run()
+
+	r.Run(":5011")
 }
 
 func preflight(c *gin.Context) {
