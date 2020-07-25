@@ -10,6 +10,7 @@ import (
 	"net/http"
 	. "nrcnewsapi/api/nrcnewsapi/src/config"
 	. "nrcnewsapi/api/nrcnewsapi/src/model"
+	"nrcnewsapi/api/nrcnewsapi/src/util"
 	"strings"
 )
 
@@ -41,9 +42,9 @@ func (scraper Scraper) GetAll() gin.HandlerFunc {
 
 				header := goQuerySelection.Find(".nmt-item__content")
 
-				topic := trimText(header.Find("h6").Text())
-				title := trimText(header.Find("h3").Text())
-				teaser := trimText(header.Find(".nmt-item__teaser").Text())
+				topic := util.TrimText(header.Find("h6").Text())
+				title := util.TrimText(header.Find("h3").Text())
+				teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
 
 				articleList = append(articleList,
 					ArticleItem{
@@ -86,9 +87,13 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 
 			header := goQuerySelection.Find(".nmt-item__content")
 
-			topic := trimText(header.Find("h6").Text())
-			title := trimText(header.Find("h3").Text())
-			teaser := trimText(header.Find(".nmt-item__teaser").Text())
+			topic := util.TrimText(header.Find("h6").Text())
+			title := util.TrimText(header.Find("h3").Text())
+			teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
+
+			if util.IsEmpty(topic) {
+				topic = scraper.Endpoint
+			}
 
 			articleList = append(articleList,
 				ArticleItem{
@@ -205,13 +210,6 @@ func initializeCalls(c *colly.Collector) {
 	c.OnResponse(func(r *colly.Response) {
 		fmt.Println("Visited", r.Request.URL)
 	})
-}
-
-func trimText(text string) string {
-	trimmedSpaces := strings.TrimSpace(text)
-	trimmedLeft := strings.TrimLeft(trimmedSpaces, " ")
-	trimmedFinal := strings.TrimRight(trimmedLeft, " ")
-	return trimmedFinal
 }
 
 func printSection(section Section) {
