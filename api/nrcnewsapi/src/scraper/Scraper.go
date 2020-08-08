@@ -224,7 +224,7 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 			c.Wait()
 
-			log.Println("Fetched Article: {} -> {}", article.Topic, article.Title)
+			log.Println("Fetched Article: ", article.Topic, article.Title)
 			log.Println("Article scraped successfully")
 
 			util.SetCache(cacheKey, article)
