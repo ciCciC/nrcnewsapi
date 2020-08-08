@@ -16,18 +16,18 @@ import (
 
 type Scraper struct {
 	Endpoint  string
-	Endpoints [3]string
+	Endpoints []string
 }
-
-const CACHE_KEY = "articles"
 
 func (scraper Scraper) GetAll() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		c := GetCollector()
 
+		cacheKey := strings.Join(scraper.Endpoints, "")
+
 		var articleList []ArticleItem
 
-		cachedArticles, found := util.GetCache(CACHE_KEY)
+		cachedArticles, found := util.GetCache(cacheKey)
 
 		if found {
 
@@ -73,7 +73,7 @@ func (scraper Scraper) GetAll() gin.HandlerFunc {
 
 			}
 
-			util.SetCache(CACHE_KEY, articleList)
+			util.SetCache(cacheKey, articleList)
 
 			context.JSON(http.StatusOK, articleList)
 		}
@@ -86,7 +86,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 
 		var articleList []ArticleItem
 
-		cachedArticles, found := util.GetCache(CACHE_KEY)
+		cachedArticles, found := util.GetCache(scraper.Endpoint)
 
 		if found {
 
@@ -133,7 +133,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 
 			log.Println("Article items scraped:", len(articleList))
 
-			util.SetCache(CACHE_KEY, articleList)
+			util.SetCache(scraper.Endpoint, articleList)
 
 			context.JSON(http.StatusOK, articleList)
 		}
