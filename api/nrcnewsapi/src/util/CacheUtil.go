@@ -3,26 +3,25 @@ package util
 import (
 	"github.com/patrickmn/go-cache"
 	"log"
-	"nrcnewsapi/api/nrcnewsapi/src/model"
 	"time"
 )
 
 var Cache = cache.New(1*time.Hour, 1*time.Hour)
 
-func SetCache(key string, articles []model.ArticleItem) bool {
-	log.Println("Is caching articles")
-	Cache.Set(key, articles, cache.DefaultExpiration)
+func SetCache(key string, objectToCache interface{}) bool {
+	log.Println("Is caching..")
+	Cache.Set(key, objectToCache, cache.DefaultExpiration)
 	return true
 }
 
-func GetCache(key string) ([]model.ArticleItem, bool) {
-	var articleList []model.ArticleItem
+func GetCache(key string) (interface{}, bool) {
+	var cachedObject interface{}
 	var found bool
 
 	data, found := Cache.Get(key)
 
 	if found {
-		articleList = data.([]model.ArticleItem)
+		cachedObject = data.(interface{})
 	}
-	return articleList, found
+	return cachedObject, found
 }
