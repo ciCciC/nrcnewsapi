@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var Cache = cache.New(10*time.Minute, 10*time.Minute)
+var Cache = cache.New(1*time.Hour, 1*time.Hour)
 
 func SetCache(key string, articles []model.ArticleItem) bool {
 	log.Println("Is caching articles")
