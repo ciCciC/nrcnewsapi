@@ -19,15 +19,83 @@ type Scraper struct {
 	Endpoints [3]string
 }
 
+const CACHE_KEY = "articles"
+
 func (scraper Scraper) GetAll() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		c := GetCollector()
 
-		initializeCalls(c)
+		var articleList []ArticleItem
+
+		cachedArticles, found := util.GetCache(CACHE_KEY)
+
+		if found {
+
+			log.Println("Fetches cached articles")
+			context.JSON(http.StatusOK, cachedArticles)
+
+		} else {
+
+			initializeCalls(c)
+
+			for _, endpoint := range scraper.Endpoints {
+
+				c.OnHTML("div.nmt-item__inner", func(e *colly.HTMLElement) {
+
+					goQuerySelection := e.DOM
+
+					linkOfPage, _ := goQuerySelection.
+						Find("a").
+						Attr("href")
+
+					imageLink := strings.
+						Split(e.ChildAttr(IMG, "data-src"), "|")[0]
+
+					header := goQuerySelection.Find(".nmt-item__content")
+
+					topic := util.TrimText(header.Find("h6").Text())
+					title := util.TrimText(header.Find("h3").Text())
+					teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
+
+					articleList = append(articleList,
+						ArticleItem{
+							PageLink:  API + linkOfPage,
+							ImageLink: imageLink,
+							Topic:     topic,
+							Title:     title,
+							Teaser:    teaser})
+				})
+
+				c.Visit(API + "/categorie/" + endpoint)
+				c.Wait()
+
+				log.Println("Article items scraped:", len(articleList))
+
+			}
+
+			util.SetCache(CACHE_KEY, articleList)
+
+			context.JSON(http.StatusOK, articleList)
+		}
+	}
+}
+
+func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		c := GetCollector()
 
 		var articleList []ArticleItem
 
-		for _, endpoint := range scraper.Endpoints {
+		cachedArticles, found := util.GetCache(CACHE_KEY)
+
+		if found {
+
+			log.Println("Fetches cached articles")
+			context.JSON(http.StatusOK, cachedArticles)
+
+		} else {
+
+			initializeCalls(c)
 
 			c.OnHTML("div.nmt-item__inner", func(e *colly.HTMLElement) {
 
@@ -46,6 +114,10 @@ func (scraper Scraper) GetAll() gin.HandlerFunc {
 				title := util.TrimText(header.Find("h3").Text())
 				teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
 
+				if util.IsEmpty(topic) {
+					topic = scraper.Endpoint
+				}
+
 				articleList = append(articleList,
 					ArticleItem{
 						PageLink:  API + linkOfPage,
@@ -55,62 +127,16 @@ func (scraper Scraper) GetAll() gin.HandlerFunc {
 						Teaser:    teaser})
 			})
 
-			c.Visit(API + "/categorie/" + endpoint)
+			c.Visit(API + "/categorie/" + scraper.Endpoint)
+
 			c.Wait()
 
 			log.Println("Article items scraped:", len(articleList))
 
+			util.SetCache(CACHE_KEY, articleList)
+
+			context.JSON(http.StatusOK, articleList)
 		}
-
-		context.JSON(http.StatusOK, articleList)
-	}
-}
-
-func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		c := GetCollector()
-
-		initializeCalls(c)
-
-		var articleList []ArticleItem
-
-		c.OnHTML("div.nmt-item__inner", func(e *colly.HTMLElement) {
-
-			goQuerySelection := e.DOM
-
-			linkOfPage, _ := goQuerySelection.
-				Find("a").
-				Attr("href")
-
-			imageLink := strings.
-				Split(e.ChildAttr(IMG, "data-src"), "|")[0]
-
-			header := goQuerySelection.Find(".nmt-item__content")
-
-			topic := util.TrimText(header.Find("h6").Text())
-			title := util.TrimText(header.Find("h3").Text())
-			teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
-
-			if util.IsEmpty(topic) {
-				topic = scraper.Endpoint
-			}
-
-			articleList = append(articleList,
-				ArticleItem{
-					PageLink:  API + linkOfPage,
-					ImageLink: imageLink,
-					Topic:     topic,
-					Title:     title,
-					Teaser:    teaser})
-		})
-
-		c.Visit(API + "/categorie/" + scraper.Endpoint)
-
-		c.Wait()
-
-		log.Println("Article items scraped:", len(articleList))
-
-		context.JSON(http.StatusOK, articleList)
 	}
 }
 
