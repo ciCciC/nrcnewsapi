@@ -145,81 +145,92 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		var articleItem ArticleItem
 		context.BindJSON(&articleItem)
 
-		c := GetCollector()
-
-		initializeCalls(c)
-
 		var article Article
-
 		var sectionList []Section
-
 		var buff []Dummy
 
-		c.OnHTML("div.content", func(e *colly.HTMLElement) {
+		cacheKey := articleItem.Topic + articleItem.Title
 
-			goQuerySelection := e.DOM
+		cachedArticle, found := util.GetCache(cacheKey)
 
-			var dummy Dummy
-			goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
-				Each(func(i int, selection *goquery.Selection) {
+		if found {
 
-					if selection.Parent().Is("aside") {
-						return
-					}
+			log.Println("Fetches cached article")
+			context.JSON(http.StatusOK, cachedArticle)
 
-					if selection.Is(H2) {
-						dummy.Title = selection.Text()
-						dummy.ContentBody.Content = ""
-						dummy.ContentBody.CType = H2
+		} else {
+			c := GetCollector()
 
-					} else if selection.Is(P) && len(selection.Text()) > 0 {
-						dummy.ContentBody.Content = selection.Text()
-						dummy.ContentBody.CType = P
+			initializeCalls(c)
 
-					} else if selection.Is(FIGURE) {
-						attr := e.ChildAttr(IMG, "data-src")
-						dummy.ContentBody.Content = strings.Split(attr, "|")[0]
-						dummy.ContentBody.CType = IMG
-					}
+			c.OnHTML("div.content", func(e *colly.HTMLElement) {
 
-					buff = append(buff, dummy)
+				goQuerySelection := e.DOM
+
+				var dummy Dummy
+				goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
+					Each(func(i int, selection *goquery.Selection) {
+
+						if selection.Parent().Is("aside") {
+							return
+						}
+
+						if selection.Is(H2) {
+							dummy.Title = selection.Text()
+							dummy.ContentBody.Content = ""
+							dummy.ContentBody.CType = H2
+
+						} else if selection.Is(P) && len(selection.Text()) > 0 {
+							dummy.ContentBody.Content = selection.Text()
+							dummy.ContentBody.CType = P
+
+						} else if selection.Is(FIGURE) {
+							attr := e.ChildAttr(IMG, "data-src")
+							dummy.ContentBody.Content = strings.Split(attr, "|")[0]
+							dummy.ContentBody.CType = IMG
+						}
+
+						buff = append(buff, dummy)
+					})
+
+				groupedByTitle := linq.From(buff).GroupBy(
+					func(i interface{}) interface{} { return i.(Dummy).Title },
+					func(i interface{}) interface{} { return i.(Dummy).ContentBody })
+
+				groupedByTitle.ForEach(func(i interface{}) {
+					var section Section
+					section.Title = i.(linq.Group).
+						Key.(string)
+
+					linq.From(i.(linq.Group).Group).
+						ToSlice(&section.Contents)
+
+					sectionList = append(sectionList, section)
 				})
 
-			groupedByTitle := linq.From(buff).GroupBy(
-				func(i interface{}) interface{} { return i.(Dummy).Title },
-				func(i interface{}) interface{} { return i.(Dummy).ContentBody })
-
-			groupedByTitle.ForEach(func(i interface{}) {
-				var section Section
-				section.Title = i.(linq.Group).
-					Key.(string)
-
-				linq.From(i.(linq.Group).Group).
-					ToSlice(&section.Contents)
-
-				sectionList = append(sectionList, section)
+				article = Article{
+					ArticleItem: ArticleItem{
+						PageLink:  articleItem.PageLink,
+						ImageLink: articleItem.ImageLink,
+						Topic:     articleItem.Topic,
+						Title:     articleItem.Title,
+						Teaser:    articleItem.Teaser,
+					},
+					SectionList: sectionList,
+				}
 			})
 
-			article = Article{
-				ArticleItem: ArticleItem{
-					PageLink:  articleItem.PageLink,
-					ImageLink: articleItem.ImageLink,
-					Topic:     articleItem.Topic,
-					Title:     articleItem.Title,
-					Teaser:    articleItem.Teaser,
-				},
-				SectionList: sectionList,
-			}
-		})
+			c.Visit(articleItem.PageLink)
 
-		c.Visit(articleItem.PageLink)
+			c.Wait()
 
-		c.Wait()
+			log.Println("Fetched Article: ", article.Topic, article.Title)
+			log.Println("Article scraped successfully")
 
-		log.Println("Fetched Article: {} -> {}", article.Topic, article.Title)
-		log.Println("Article scraped successfully")
+			util.SetCache(cacheKey, article)
 
-		context.JSON(http.StatusOK, article)
+			context.JSON(http.StatusOK, article)
+		}
 	}
 }
 
