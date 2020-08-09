@@ -9,7 +9,11 @@ A simple NRC Scraper API written in GO with Colly (scraping framework) and Gin (
 This API can be used for building NRC-news mobile and web app.
 
 [Build a docker image]<br/>
-Docker build -f DockerFile -t nrcnewsapi .
+docker build -f Dockerfile -t nrcnewsapi .
+
+or
+
+docker pull docker.pkg.github.com/ciccic/nrcnewsapi/nrcnewsapi:latest
 
 [Run docker container]<br/>
 docker run -i -t --name nrcnewsapi -d -p 5011:5011 nrcnewsapi:latest
