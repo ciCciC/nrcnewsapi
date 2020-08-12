@@ -149,88 +149,76 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		var sectionList []Section
 		var buff []Dummy
 
-		cacheKey := articleItem.Topic + articleItem.Title
+		c := GetCollector()
 
-		cachedArticle, found := util.GetCache(cacheKey)
+		initializeCalls(c)
 
-		if found {
+		c.OnHTML("div.content", func(e *colly.HTMLElement) {
 
-			log.Println("Fetches cached article")
-			context.JSON(http.StatusOK, cachedArticle)
+			goQuerySelection := e.DOM
 
-		} else {
-			c := GetCollector()
+			var dummy Dummy
+			goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
+				Each(func(i int, selection *goquery.Selection) {
 
-			initializeCalls(c)
+					if selection.Parent().Is("aside") {
+						return
+					}
 
-			c.OnHTML("div.content", func(e *colly.HTMLElement) {
+					if selection.Is(H2) {
+						dummy.Title = selection.Text()
+						dummy.ContentBody.Content = ""
+						dummy.ContentBody.CType = H2
 
-				goQuerySelection := e.DOM
+					} else if selection.Is(P) && len(selection.Text()) > 0 {
+						dummy.ContentBody.Content = selection.Text()
+						dummy.ContentBody.CType = P
 
-				var dummy Dummy
-				goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
-					Each(func(i int, selection *goquery.Selection) {
+					} else if selection.Is(FIGURE) {
+						attr := e.ChildAttr(IMG, "data-src")
+						dummy.ContentBody.Content = strings.Split(attr, "|")[0]
+						dummy.ContentBody.CType = IMG
+					}
 
-						if selection.Parent().Is("aside") {
-							return
-						}
-
-						if selection.Is(H2) {
-							dummy.Title = selection.Text()
-							dummy.ContentBody.Content = ""
-							dummy.ContentBody.CType = H2
-
-						} else if selection.Is(P) && len(selection.Text()) > 0 {
-							dummy.ContentBody.Content = selection.Text()
-							dummy.ContentBody.CType = P
-
-						} else if selection.Is(FIGURE) {
-							attr := e.ChildAttr(IMG, "data-src")
-							dummy.ContentBody.Content = strings.Split(attr, "|")[0]
-							dummy.ContentBody.CType = IMG
-						}
-
-						buff = append(buff, dummy)
-					})
-
-				groupedByTitle := linq.From(buff).GroupBy(
-					func(i interface{}) interface{} { return i.(Dummy).Title },
-					func(i interface{}) interface{} { return i.(Dummy).ContentBody })
-
-				groupedByTitle.ForEach(func(i interface{}) {
-					var section Section
-					section.Title = i.(linq.Group).
-						Key.(string)
-
-					linq.From(i.(linq.Group).Group).
-						ToSlice(&section.Contents)
-
-					sectionList = append(sectionList, section)
+					buff = append(buff, dummy)
 				})
 
-				article = Article{
-					ArticleItem: ArticleItem{
-						PageLink:  articleItem.PageLink,
-						ImageLink: articleItem.ImageLink,
-						Topic:     articleItem.Topic,
-						Title:     articleItem.Title,
-						Teaser:    articleItem.Teaser,
-					},
-					SectionList: sectionList,
-				}
+			groupedByTitle := linq.From(buff).GroupBy(
+				func(i interface{}) interface{} { return i.(Dummy).Title },
+				func(i interface{}) interface{} { return i.(Dummy).ContentBody })
+
+			groupedByTitle.ForEach(func(i interface{}) {
+				var section Section
+				section.Title = i.(linq.Group).
+					Key.(string)
+
+				linq.From(i.(linq.Group).Group).
+					ToSlice(&section.Contents)
+
+				sectionList = append(sectionList, section)
 			})
 
-			c.Visit(articleItem.PageLink)
+			article = Article{
+				ArticleItem: ArticleItem{
+					PageLink:  articleItem.PageLink,
+					ImageLink: articleItem.ImageLink,
+					Topic:     articleItem.Topic,
+					Title:     articleItem.Title,
+					Teaser:    articleItem.Teaser,
+				},
+				SectionList: sectionList,
+			}
+		})
 
-			c.Wait()
+		c.Visit(articleItem.PageLink)
 
-			log.Println("Fetched Article: ", article.Topic, article.Title)
-			log.Println("Article scraped successfully")
+		c.Wait()
 
-			util.SetCache(cacheKey, article)
+		log.Println("Fetched Article: ", article.Topic, article.Title)
+		log.Println("Article scraped successfully")
 
-			context.JSON(http.StatusOK, article)
-		}
+		context.JSON(http.StatusOK, article)
+
 	}
 }
 
