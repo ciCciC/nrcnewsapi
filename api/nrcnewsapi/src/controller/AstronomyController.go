@@ -10,7 +10,7 @@ type AstronomyController struct {
 }
 
 func (c AstronomyController) InitRoute(r *gin.Engine) {
-	scraper := scraper.Scraper{Endpoint: "astronomie"}
+	scraper := scraper.Scraper{Endpoint: ASTRONOMY, Topic: "astronomie"}
 	game := r.Group("/" + CATEGORY)
 	{
 		game.GET("/astronomy", scraper.GetAllArticles())

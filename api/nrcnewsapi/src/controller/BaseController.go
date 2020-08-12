@@ -9,5 +9,10 @@ type BaseController interface {
 }
 
 const (
-	CATEGORY = "category"
+	CATEGORY    = "category"
+	GAMES       = "/categorie/games"
+	TECHNOLOGY  = "/categorie/technologie"
+	PHYSICS     = "/categorie/natuurkunde"
+	ASTRONOMY   = "/categorie/astronomie"
+	LATEST_NEWS = "/nieuws"
 )
