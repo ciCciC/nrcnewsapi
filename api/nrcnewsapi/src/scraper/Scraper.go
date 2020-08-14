@@ -16,6 +16,7 @@ import (
 
 type Scraper struct {
 	Endpoint  string
+	Topic     string
 	Endpoints []string
 }
 
@@ -115,7 +116,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 				teaser := util.TrimText(header.Find(".nmt-item__teaser").Text())
 
 				if util.IsEmpty(topic) {
-					topic = scraper.Endpoint
+					topic = scraper.Topic
 				}
 
 				articleList = append(articleList,
@@ -127,7 +128,7 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 						Teaser:    teaser})
 			})
 
-			c.Visit(API + "/categorie/" + scraper.Endpoint)
+			c.Visit(API + scraper.Endpoint)
 
 			c.Wait()
 

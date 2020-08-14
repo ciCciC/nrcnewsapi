@@ -10,7 +10,7 @@ type PhysicsController struct {
 }
 
 func (t PhysicsController) InitRoute(r *gin.Engine) {
-	scraper := scraper.Scraper{Endpoint: "natuurkunde"}
+	scraper := scraper.Scraper{Endpoint: PHYSICS, Topic: "natuurkunde"}
 	physics := r.Group("/" + CATEGORY)
 	{
 		physics.GET("/physics", scraper.GetAllArticles())
