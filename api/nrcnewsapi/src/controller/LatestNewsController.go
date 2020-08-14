@@ -11,8 +11,9 @@ type LatestNewsController struct {
 
 func (t LatestNewsController) InitRoute(r *gin.Engine) {
 	scraper := scraper.Scraper{Endpoint: LATEST_NEWS, Topic: "nieuws"}
-	latestNews := r.Group("/")
+	latestNews := r.Group("/" + CATEGORY)
 	{
-		latestNews.GET("news", scraper.GetAllArticles())
+		latestNews.GET("/news", scraper.GetAllArticles())
+		latestNews.POST("/news/article", scraper.GetArticle())
 	}
 }
