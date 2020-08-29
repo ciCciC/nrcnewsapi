@@ -1,0 +1,41 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nrc-api-service
+  namespace: default
+spec:
+  selector:
+   app: nrc-api
+  ports:
+    - protocol: TCP
+      # Port accessible inside cluster
+      port: 80
+      # Port to forward to inside the pod
+      targetPort: 5011
+      # Port accessible outside cluster
+      nodePort: <nodePort>
+  type: LoadBalancer
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nrc-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nrc-api
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nrc-api
+    spec:
+      containers:
+        - name: nrc-api
+          image: williamhall/nrcapi-golang
+          ports:
+            - containerPort: 5011

@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  nrc-api-nginx:
+    image: nginx:alpine
+    container_name: nrc-api-nginx
+    network_mode: host
+    volumes:
+      - ./nrc-api-nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - port:port
+    restart: always
