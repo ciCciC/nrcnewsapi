@@ -5,6 +5,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 	"net/http"
+	"nrcnewsapi/api/nrcnewsapi/src/docs"
 	"nrcnewsapi/api/nrcnewsapi/src/route"
 )
 
@@ -21,6 +22,8 @@ import (
 
 // @BasePath /api/v1
 func main() {
+	docs.SwaggerInfo.Title = "NRC news API"
+
 	r := route.SetupRouter()
 	welcomeTxt := "  _          _             _____                                _ \r\n | |        | |           / ____|                              | |\r\n | |     ___| |_ ___     | (___   ___ _ __ __ _ _ __   ___     | |\r\n | |    / _ \\ __/ __|     \\___ \\ / __| '__/ _` | '_ \\ / _ \\    | |\r\n | |___|  __/ |_\\__ \\     ____) | (__| | | (_| | |_) |  __/    |_|\r\n |______\\___|\\__|___/    |_____/ \\___|_|  \\__,_| .__/ \\___|    (_)\r\n                                               | |                \r\n                                               |_|                "
 

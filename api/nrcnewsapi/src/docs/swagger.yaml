@@ -1,0 +1,45 @@
+basePath: /api/v1
+definitions:
+  model.ArticleItem:
+    properties:
+      imageLink:
+        example: page link
+        type: string
+      pageLink:
+        example: page link
+        type: string
+      teaser:
+        example: page link
+        type: string
+      title:
+        example: page link
+        type: string
+      topic:
+        example: page link
+        type: string
+    type: object
+info:
+  contact:
+    email: williamhall2894@gmail.com
+    name: API Support
+  description: Swagger API for NRC news API.
+  license:
+    name: MIT
+    url: https://github.com/ciCciC/nrcnewsapi
+  termsOfService: http://swagger.io/terms/
+  title: NRC News Swagger API
+  version: "1.0"
+paths:
+  /category/technology:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ArticleItem'
+            type: array
+      summary: Retrieves all Technology articles
+swagger: "2.0"

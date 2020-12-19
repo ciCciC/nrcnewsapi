@@ -1,0 +1,66 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Swagger API for NRC news API.",
+        "title": "NRC News Swagger API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "williamhall2894@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/ciCciC/nrcnewsapi"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/category/technology": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all Technology articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.ArticleItem": {
+            "type": "object",
+            "properties": {
+                "imageLink": {
+                    "type": "string",
+                    "example": "page link"
+                },
+                "pageLink": {
+                    "type": "string",
+                    "example": "page link"
+                },
+                "teaser": {
+                    "type": "string",
+                    "example": "page link"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "page link"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "page link"
+                }
+            }
+        }
+    }
+}

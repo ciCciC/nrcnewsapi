@@ -29,12 +29,6 @@ func (t TechnologyController) allTechnologyArticles(scrape scraper.Scraper) gin.
 	return scrape.GetAllArticles()
 }
 
-// technologyArticle godoc
-// @Summary Retrieves Technology article
-// @Produce json
-// @Param articleItem path ArticleItem true "Article Item payload"
-// @Success 200 {object} model.Article
-// @Router /category/technology/article [post]
 func (t TechnologyController) technologyArticle(scrape scraper.Scraper) gin.HandlerFunc {
 	return scrape.GetArticle()
 }
