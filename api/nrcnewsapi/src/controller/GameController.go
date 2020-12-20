@@ -13,7 +13,28 @@ func (t GameController) InitRoute(r *gin.Engine) {
 	scraper := scraper.Scraper{Endpoint: GAMES, Topic: "games"}
 	game := r.Group("/" + CATEGORY)
 	{
-		game.GET("/games", scraper.GetAllArticles())
-		game.POST("/games/article", scraper.GetArticle())
+		game.GET("/games", t.allArticles(scraper))
+		game.POST("/games/article", t.article(scraper))
 	}
+}
+
+// allArticles godoc
+// @Summary Retrieves all articles
+// @Produce json
+// @Success 200 {array} model.ArticleItem
+// @Router /category/games [get]
+func (t GameController) allArticles(scrape scraper.Scraper) gin.HandlerFunc {
+	return scrape.GetAllArticles()
+}
+
+// article godoc
+// @Summary Retrieves article
+// @Description Get a article with article item payload
+// @Accept  json
+// @Produce json
+// @Param articleitem body model.ArticleItem true "Get article"
+// @Success 200 {object} model.Article
+// @Router /category/games/article [post]
+func (t GameController) article(scrape scraper.Scraper) gin.HandlerFunc {
+	return scrape.GetArticle()
 }
