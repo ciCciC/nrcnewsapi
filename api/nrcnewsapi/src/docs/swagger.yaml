@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   model.ArticleItem:
     properties:
@@ -22,13 +21,10 @@ info:
   contact:
     email: williamhall2894@gmail.com
     name: API Support
-  description: Swagger API for NRC news API.
   license:
     name: MIT
     url: https://github.com/ciCciC/nrcnewsapi
   termsOfService: http://swagger.io/terms/
-  title: NRC News Swagger API
-  version: "1.0"
 paths:
   /category/technology:
     get:

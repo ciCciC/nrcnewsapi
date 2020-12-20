@@ -1,8 +1,6 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Swagger API for NRC news API.",
-        "title": "NRC News Swagger API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
@@ -11,10 +9,8 @@
         "license": {
             "name": "MIT",
             "url": "https://github.com/ciCciC/nrcnewsapi"
-        },
-        "version": "1.0"
+        }
     },
-    "basePath": "/api/v1",
     "paths": {
         "/category/technology": {
             "get": {
