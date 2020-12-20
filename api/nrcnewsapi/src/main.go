@@ -19,18 +19,8 @@ func main() {
 
 	r := route.SetupRouter()
 
-	r.LoadHTMLGlob("assets/*")
-	r.GET("/",
-		func(c *gin.Context) {
-			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
-
-			c.HTML(http.StatusOK, "index.html", gin.H{
-				"": "",
-			})
-		})
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	initBasePath(r)
+	initSwaggerPath(r)
 
 	r.Run(":5011")
 }
@@ -40,6 +30,22 @@ func initApiDoc() {
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Description = "Scrapes NRC news articles"
 	docs.SwaggerInfo.Version = "1.0"
+}
+
+func initBasePath(r *gin.Engine) {
+	r.LoadHTMLGlob("assets/*")
+	r.GET("/",
+		func(c *gin.Context) {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+			c.HTML(http.StatusOK, "index.html", gin.H{
+				"": "",
+			})
+		})
+}
+
+func initSwaggerPath(r *gin.Engine) {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func preflight(c *gin.Context) {

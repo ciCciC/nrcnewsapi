@@ -10,11 +10,17 @@ type CategoryController struct {
 	BaseController
 }
 
-func (c CategoryController) InitRoute(r *gin.Engine) {
-	r.GET("/categories", c.GetCategories)
+func (t CategoryController) InitRoute(r *gin.Engine) {
+	r.GET("/categories", t.GetCategories)
 }
 
-func (c CategoryController) GetCategories(context *gin.Context) {
+// GetCategories godoc
+// @Summary Retrieves category list
+// @Description Get category list
+// @Produce json
+// @Success 200 {array} model.Category
+// @Router /categories [get]
+func (t CategoryController) GetCategories(context *gin.Context) {
 	context.JSON(http.StatusOK,
 		[...]model.Category{
 			{Display: "latest news", Topic: "news"},

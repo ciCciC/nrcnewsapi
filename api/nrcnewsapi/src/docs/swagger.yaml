@@ -1,20 +1,66 @@
 definitions:
+  model.Article:
+    properties:
+      imageLink:
+        type: string
+      pageLink:
+        type: string
+      sectionList:
+        items:
+          $ref: '#/definitions/model.Section'
+        type: array
+      teaser:
+        example: BioTelemetry maakt systemen om hartpatiënten te diagnosticeren en
+          op afstand in de gaten te houden. Philips zag de vraag naar zorg op afstand
+          toenemen vanwege de pandemie.
+        type: string
+      title:
+        example: Philips koopt Amerikaanse BioTelemetry voor 2,3 miljard euro
+        type: string
+      topic:
+        example: E-health
+        type: string
+    type: object
   model.ArticleItem:
     properties:
       imageLink:
-        example: page link
         type: string
       pageLink:
-        example: page link
         type: string
       teaser:
-        example: page link
+        example: BioTelemetry maakt systemen om hartpatiënten te diagnosticeren en
+          op afstand in de gaten te houden. Philips zag de vraag naar zorg op afstand
+          toenemen vanwege de pandemie.
         type: string
       title:
-        example: page link
+        example: Philips koopt Amerikaanse BioTelemetry voor 2,3 miljard euro
         type: string
       topic:
-        example: page link
+        example: E-health
+        type: string
+    type: object
+  model.Category:
+    properties:
+      display:
+        type: string
+      topic:
+        type: string
+    type: object
+  model.ContentBody:
+    properties:
+      cType:
+        type: string
+      content:
+        type: string
+    type: object
+  model.Section:
+    properties:
+      contentBody:
+        description: Contents []string
+        items:
+          $ref: '#/definitions/model.ContentBody'
+        type: array
+      title:
         type: string
     type: object
 info:
@@ -26,6 +72,147 @@ info:
     url: https://github.com/ciCciC/nrcnewsapi
   termsOfService: http://swagger.io/terms/
 paths:
+  /categories:
+    get:
+      description: Get category list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Category'
+            type: array
+      summary: Retrieves category list
+  /category/astronomy:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ArticleItem'
+            type: array
+      summary: Retrieves all articles
+  /category/astronomy/article:
+    post:
+      consumes:
+      - application/json
+      description: Get a article with article item payload
+      parameters:
+      - description: Get article
+        in: body
+        name: articleitem
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArticleItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Article'
+      summary: Retrieves article
+  /category/games:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ArticleItem'
+            type: array
+      summary: Retrieves all articles
+  /category/games/article:
+    post:
+      consumes:
+      - application/json
+      description: Get a article with article item payload
+      parameters:
+      - description: Get article
+        in: body
+        name: articleitem
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArticleItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Article'
+      summary: Retrieves article
+  /category/news:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ArticleItem'
+            type: array
+      summary: Retrieves all articles
+  /category/news/article:
+    post:
+      consumes:
+      - application/json
+      description: Get a article with article item payload
+      parameters:
+      - description: Get article
+        in: body
+        name: articleitem
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArticleItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Article'
+      summary: Retrieves article
+  /category/physics:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ArticleItem'
+            type: array
+      summary: Retrieves all articles
+  /category/physics/article:
+    post:
+      consumes:
+      - application/json
+      description: Get a article with article item payload
+      parameters:
+      - description: Get article
+        in: body
+        name: articleitem
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArticleItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Article'
+      summary: Retrieves article
   /category/technology:
     get:
       produces:
@@ -37,5 +224,25 @@ paths:
             items:
               $ref: '#/definitions/model.ArticleItem'
             type: array
-      summary: Retrieves all Technology articles
+      summary: Retrieves all articles
+  /category/technology/article:
+    post:
+      consumes:
+      - application/json
+      description: Get a article with article item payload
+      parameters:
+      - description: Get article
+        in: body
+        name: articleitem
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArticleItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Article'
+      summary: Retrieves article
 swagger: "2.0"

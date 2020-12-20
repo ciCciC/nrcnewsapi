@@ -12,12 +12,32 @@
         }
     },
     "paths": {
-        "/category/technology": {
+        "/categories": {
+            "get": {
+                "description": "Get category list",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves category list",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Category"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/category/astronomy": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retrieves all Technology articles",
+                "summary": "Retrieves all articles",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -30,31 +50,326 @@
                     }
                 }
             }
+        },
+        "/category/astronomy/article": {
+            "post": {
+                "description": "Get a article with article item payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves article",
+                "parameters": [
+                    {
+                        "description": "Get article",
+                        "name": "articleitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArticleItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Article"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/games": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/category/games/article": {
+            "post": {
+                "description": "Get a article with article item payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves article",
+                "parameters": [
+                    {
+                        "description": "Get article",
+                        "name": "articleitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArticleItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Article"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/news": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/category/news/article": {
+            "post": {
+                "description": "Get a article with article item payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves article",
+                "parameters": [
+                    {
+                        "description": "Get article",
+                        "name": "articleitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArticleItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Article"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/physics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/category/physics/article": {
+            "post": {
+                "description": "Get a article with article item payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves article",
+                "parameters": [
+                    {
+                        "description": "Get article",
+                        "name": "articleitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArticleItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Article"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/technology": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/category/technology/article": {
+            "post": {
+                "description": "Get a article with article item payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves article",
+                "parameters": [
+                    {
+                        "description": "Get article",
+                        "name": "articleitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArticleItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Article"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "model.Article": {
+            "type": "object",
+            "properties": {
+                "imageLink": {
+                    "type": "string"
+                },
+                "pageLink": {
+                    "type": "string"
+                },
+                "sectionList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Section"
+                    }
+                },
+                "teaser": {
+                    "type": "string",
+                    "example": "BioTelemetry maakt systemen om hartpatiënten te diagnosticeren en op afstand in de gaten te houden. Philips zag de vraag naar zorg op afstand toenemen vanwege de pandemie."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Philips koopt Amerikaanse BioTelemetry voor 2,3 miljard euro"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "E-health"
+                }
+            }
+        },
         "model.ArticleItem": {
             "type": "object",
             "properties": {
                 "imageLink": {
-                    "type": "string",
-                    "example": "page link"
+                    "type": "string"
                 },
                 "pageLink": {
-                    "type": "string",
-                    "example": "page link"
+                    "type": "string"
                 },
                 "teaser": {
                     "type": "string",
-                    "example": "page link"
+                    "example": "BioTelemetry maakt systemen om hartpatiënten te diagnosticeren en op afstand in de gaten te houden. Philips zag de vraag naar zorg op afstand toenemen vanwege de pandemie."
                 },
                 "title": {
                     "type": "string",
-                    "example": "page link"
+                    "example": "Philips koopt Amerikaanse BioTelemetry voor 2,3 miljard euro"
                 },
                 "topic": {
                     "type": "string",
-                    "example": "page link"
+                    "example": "E-health"
+                }
+            }
+        },
+        "model.Category": {
+            "type": "object",
+            "properties": {
+                "display": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContentBody": {
+            "type": "object",
+            "properties": {
+                "cType": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Section": {
+            "type": "object",
+            "properties": {
+                "contentBody": {
+                    "description": "Contents []string",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContentBody"
+                    }
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         }

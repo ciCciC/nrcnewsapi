@@ -13,22 +13,28 @@ func (t TechnologyController) InitRoute(r *gin.Engine) {
 	scraper := scraper.Scraper{Endpoint: TECHNOLOGY, Topic: "technologie"}
 	technology := r.Group("/" + CATEGORY)
 	{
-		//technology.GET("/technology", scraper.GetAllArticles())
-		technology.GET("/technology", t.allTechnologyArticles(scraper))
-		technology.POST("/technology/article", t.technologyArticle(scraper))
-		//technology.POST("/technology/article", scraper.GetArticle())
+		technology.GET("/technology", t.allArticles(scraper))
+		technology.POST("/technology/article", t.article(scraper))
 	}
 }
 
-// allTechnologyArticles godoc
-// @Summary Retrieves all Technology articles
+// allArticles godoc
+// @Summary Retrieves all articles
 // @Produce json
 // @Success 200 {array} model.ArticleItem
 // @Router /category/technology [get]
-func (t TechnologyController) allTechnologyArticles(scrape scraper.Scraper) gin.HandlerFunc {
+func (t TechnologyController) allArticles(scrape scraper.Scraper) gin.HandlerFunc {
 	return scrape.GetAllArticles()
 }
 
-func (t TechnologyController) technologyArticle(scrape scraper.Scraper) gin.HandlerFunc {
+// article godoc
+// @Summary Retrieves article
+// @Description Get a article with article item payload
+// @Accept  json
+// @Produce json
+// @Param articleitem body model.ArticleItem true "Get article"
+// @Success 200 {object} model.Article
+// @Router /category/technology/article [post]
+func (t TechnologyController) article(scrape scraper.Scraper) gin.HandlerFunc {
 	return scrape.GetArticle()
 }
