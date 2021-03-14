@@ -176,8 +176,8 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 						dummy.ContentBody.CType = P
 
 					} else if selection.Is(FIGURE) {
-						attr := e.ChildAttr(IMG, "data-src")
-						dummy.ContentBody.Content = strings.Split(attr, "|")[0]
+						image := selection.ChildrenFiltered(IMG).AttrOr("data-src", "")
+						dummy.ContentBody.Content = strings.Split(image, "|")[0]
 						dummy.ContentBody.CType = IMG
 					}
 
