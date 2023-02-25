@@ -22,7 +22,6 @@ require (
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/temoto/robotstxt v1.1.1 // indirect
-	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
-	golang.org/x/tools v0.0.0-20201218024724-ae774e9781d2 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 )
