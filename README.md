@@ -1,8 +1,10 @@
 # nrcnewsapi
-### For experimental purpose
+## For experimental purpose
 <br/>
+<img src="../master/welcomedragon.png"
+alt="drawing" width="800" height="400"/>
 
-### Description
+## Description
 NRC = dutch news website
 
 A simple NRC Scraper API written in GO with Colly (scraping framework) and Gin (web framework).
@@ -10,7 +12,7 @@ A simple NRC Scraper API written in GO with Colly (scraping framework) and Gin (
 This API can be used for building NRC-news mobile and web app.
 <br/>
 
-### How-to
+## How-to
 [Build a docker image]<br/>
 ```
 docker build -f Dockerfile -t nrcnewsapi .
@@ -31,12 +33,8 @@ localhost:5011
 ```
 <br/>
 
-### Swagger
+## Swagger
 [Open webbrowser and run]<br/>
 ```
 localhost:5011/swagger/index.html
 ```
-<br/>
-
-<img src="../master/welcomedragon.png"
-alt="drawing" width="800" height="400"/>
