@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"nrcnewsapi/api/nrcnewsapi/src/docs"
 	"nrcnewsapi/api/nrcnewsapi/src/route"
+	"time"
 )
 
 // @termsOfService http://swagger.io/terms/
@@ -22,7 +23,13 @@ func main() {
 	initBasePath(r)
 	initSwaggerPath(r)
 
-	r.Run(":5011")
+	s := &http.Server{
+		Addr:           ":5011",
+		Handler:        r,
+		ReadTimeout:    20 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	s.ListenAndServe()
 }
 
 func initApiDoc() {

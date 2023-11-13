@@ -9,6 +9,7 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	cArr := []controller.BaseController{
+		new(controller.AnyController),
 		new(controller.TechnologyController),
 		new(controller.GameController),
 		new(controller.PhysicsController),

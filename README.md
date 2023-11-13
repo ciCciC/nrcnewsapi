@@ -12,20 +12,30 @@ This API can be used for building NRC-news mobile and web app.
 
 ### How-to
 [Build a docker image]<br/>
+```
 docker build -f Dockerfile -t nrcnewsapi .
-
+```
 or
-
+```
 docker pull docker.pkg.github.com/ciccic/nrcnewsapi/nrcnewsapi:latest
+```
 
 [Run docker container]<br/>
+```
 docker run -i -t --memory=50m --memory-swap=50m --cpus=".5" --name nrcnewsapi -d -p 5011:5011 nrcnewsapi:latest
+```
 
-[Open webbrowser and run localhost:5011]<br/>
+[Open webbrowser and run]<br/>
+```
+localhost:5011
+```
 <br/>
 
 ### Swagger
-[Open webbrowser and run localhost:5011/swagger/index.html]<br/>
+[Open webbrowser and run]<br/>
+```
+localhost:5011/swagger/index.html
+```
 <br/>
 
 <img src="../master/welcomedragon.png"

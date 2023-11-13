@@ -52,6 +52,45 @@ var doc = `{
                 }
             }
         },
+		"/categories/nl": {
+            "get": {
+                "description": "Get category list in Dutch",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves category list in Dutch",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Category"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+		"/category/all/:name": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves all articles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ArticleItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/category/astronomy": {
             "get": {
                 "produces": [

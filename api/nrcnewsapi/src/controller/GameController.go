@@ -10,11 +10,11 @@ type GameController struct {
 }
 
 func (t GameController) InitRoute(r *gin.Engine) {
-	scraper := scraper.Scraper{Endpoint: GAMES, Topic: "games"}
+	scraper := scraper.Scraper{Endpoint: GAMES, Topic: "game"}
 	game := r.Group("/" + CATEGORY)
 	{
-		game.GET("/games", t.allArticles(scraper))
-		game.POST("/games/article", t.article(scraper))
+		game.GET("/game", t.allArticles(scraper))
+		game.POST("/game/article", t.article(scraper))
 	}
 }
 

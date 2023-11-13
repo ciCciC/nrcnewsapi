@@ -17,6 +17,7 @@ import (
 type Scraper struct {
 	Endpoint  string
 	Topic     string
+	State     string
 	Endpoints []string
 }
 
@@ -84,10 +85,20 @@ func (scraper Scraper) GetAll() gin.HandlerFunc {
 func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		c := GetCollector()
+		endpoint := scraper.Endpoint
+		categoryParam := context.Param("name")
+
+		if !util.IsEmpty(categoryParam) {
+			scraper.Topic = categoryParam
+			endpoint = scraper.Endpoint + "/" + categoryParam
+			log.Println("Has predefined category")
+		} else {
+			log.Println("Has not predefined category")
+		}
 
 		var articleList []ArticleItem
 
-		cachedArticles, found := util.GetCache(scraper.Endpoint)
+		cachedArticles, found := util.GetCache(endpoint)
 
 		if found {
 
@@ -128,13 +139,13 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 						Teaser:    teaser})
 			})
 
-			c.Visit(API + scraper.Endpoint)
+			c.Visit(API + endpoint + scraper.State)
 
 			c.Wait()
 
 			log.Println("Article items scraped:", len(articleList))
 
-			util.SetCache(scraper.Endpoint, articleList)
+			util.SetCache(endpoint, articleList)
 
 			context.JSON(http.StatusOK, articleList)
 		}
