@@ -29,7 +29,7 @@ func (t GameController) allArticles(scrape scraper.Scraper) gin.HandlerFunc {
 
 // article godoc
 // @Summary Retrieves article
-// @Description Get a article with article item payload
+// @Description Get an article with article item payload
 // @Accept  json
 // @Produce json
 // @Param articleitem body model.ArticleItem true "Get article"

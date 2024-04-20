@@ -152,7 +152,15 @@ func (scraper Scraper) GetAllArticles() gin.HandlerFunc {
 	}
 }
 
+func (scraper Scraper) GetArticleFallback() gin.HandlerFunc {
+	return scraper.BaseGetArticle("div.content")
+}
+
 func (scraper Scraper) GetArticle() gin.HandlerFunc {
+	return scraper.BaseGetArticle(".vorm__article-content")
+}
+
+func (scraper Scraper) BaseGetArticle(eoi string) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var articleItem ArticleItem
 		context.BindJSON(&articleItem)
@@ -165,12 +173,14 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 
 		initializeCalls(c)
 
-		c.OnHTML("div.content", func(e *colly.HTMLElement) {
+		findCriteria := fmt.Sprintf("%s > p, %s > h2, %s > figure", eoi, eoi, eoi)
+
+		c.OnHTML(eoi, func(e *colly.HTMLElement) {
 
 			goQuerySelection := e.DOM
 
 			var dummy Dummy
-			goQuerySelection.Find("div.content > p, div.content > h2, div.content > figure").
+			goQuerySelection.Find(findCriteria).
 				Each(func(i int, selection *goquery.Selection) {
 
 					if selection.Parent().Is("aside") {
@@ -223,30 +233,32 @@ func (scraper Scraper) GetArticle() gin.HandlerFunc {
 		})
 
 		c.Visit(articleItem.PageLink)
-
 		c.Wait()
 
-		log.Println("Fetched Article: ", article.Topic, article.Title)
-		log.Println("Article scraped successfully")
-
-		context.JSON(http.StatusOK, article)
-
+		fetchingState := article.Title
+		if fetchingState != "" {
+			log.Println("--- Article scraped successfully: ", articleItem.PageLink)
+			context.JSON(http.StatusOK, article)
+		} else {
+			log.Println("--- Article scraped unsuccessfully: ", articleItem.PageLink)
+			context.JSON(http.StatusNoContent, article)
+		}
 	}
 }
 
 func initializeCalls(c *colly.Collector) {
 	// Before making a request ..."
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL.String())
-	})
+	//c.OnRequest(func(r *colly.Request) {
+	//	fmt.Println("Visiting", r.URL.String())
+	//})
 
 	c.OnError(func(_ *colly.Response, err error) {
 		log.Println("Something went wrong:", err)
 	})
 
-	c.OnResponse(func(r *colly.Response) {
-		fmt.Println("Visited", r.Request.URL)
-	})
+	//c.OnResponse(func(r *colly.Response) {
+	//	fmt.Println("Visited", r.Request.URL)
+	//})
 }
 
 func printSection(section Section) {

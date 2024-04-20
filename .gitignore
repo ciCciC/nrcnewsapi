@@ -3,4 +3,5 @@
 .idea/*.iml
 .idea/*.ipr
 .idea/workspace.xml
-
+go.sum
+api/pkg
